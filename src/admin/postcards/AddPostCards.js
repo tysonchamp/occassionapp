@@ -1,109 +1,196 @@
+import { useLocation } from 'react-router-dom';
+import CustomSweetAlert from '../../components/SweetAlert';
+import { useState, useEffect } from 'react';
+import AppContext from '../../components/GlobalVars';
+import Loader from '../../components/Loader';
+// 
+
 function AddPostCards() {
+
+    const [title, setTitle] = useState("");
+    const [mrp, setMrp] = useState("");
+    const [discount, setDiscount] = useState("");
+    const [category, setCategory] = useState("");
+    // eslint-disable-next-line
+    const [preview_image, setPreview_image] = useState("");
+    // eslint-disable-next-line
+    const [attachment, setAttachment] = useState("");
+    const [postCardCategories, setPostCardCategories] = useState("");
+    // 
+    const [alert, setAlert] = useState("");
+    const [loader, setLoader] = useState("");
+    const location = useLocation()
+
+    useEffect(() => {
+        console.log(location.pathname.split('/'));
+        if (location.pathname.split('/').length === 5) {
+            let pathname = location.pathname.split('/');
+            var requestOptions = {
+                method: 'GET',
+                // body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch(AppContext.apiUrl + "post/cards/fetch/"+pathname[4], requestOptions)
+                .then(response => { return response.json() })
+                .then(data => { 
+                    console.log(data);
+                    setTitle(data.postCardData.title);
+                    setMrp(data.postCardData.mrp);
+                    setDiscount(data.postCardData.discount);
+                    setCategory(data.postCardData.category);
+                    setPreview_image(data.postCardData.preview_image);
+                    setAttachment(data.postCardData.attachment);
+                    setPostCardCategories(data.categories);
+                })
+        }else{
+            var requestOptions = {
+                method: 'GET',
+                // body: formdata,
+                redirect: 'follow'
+            };
+    
+            fetch(AppContext.apiUrl + "post/category/all_lists", requestOptions)
+                .then(response => { return response.json() })
+                .then(data => { setPostCardCategories(data.categories) })
+        }
+    }, [location]);
+
+    const showAlert = (message, type) => {
+        let alertData = { msg: message, type: type };
+        setAlert(
+            <CustomSweetAlert alert={alertData} />
+        )
+
+        setTimeout(() => {
+            setAlert("");
+        }, 5000);
+    }
+
+    const showLoader = () => {
+        setLoader(
+            <Loader />
+        )
+    }
+
+    const handleformsubmit = async (event) => {
+        event.preventDefault();
+        showLoader();
+
+        var formdata = new FormData();
+        formdata.append("title", title);
+        formdata.append("preview_image", preview_image);
+        formdata.append("mrp", mrp);
+        formdata.append("discount", discount);
+        formdata.append("attachment", attachment);
+        formdata.append("category", category);
+
+        var requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        if (location.pathname.split('/').length === 5) {
+            let pathname = location.pathname.split('/');
+            let results = await fetch(AppContext.apiUrl + "post/cards/update/"+pathname[4], requestOptions);
+            let returnData = await results.json();
+
+            console.log(returnData);
+            if (returnData.success === true) {
+                showAlert(returnData.message[0], 'success');
+                setLoader("");
+            } else {
+                showAlert(returnData.message[0], 'warning');
+                setLoader("");
+            }
+        }else{
+            let results = await fetch(AppContext.apiUrl + "post/cards/create", requestOptions);
+            let returnData = await results.json();
+
+            console.log(returnData);
+            if (returnData.success === true) {
+                showAlert(returnData.message[0], 'success');
+                setLoader("");
+            } else {
+                showAlert(returnData.message[0], 'warning');
+                setLoader("");
+            }
+        }
+    }
+
     return <>
         <section className="main-content">
             <div className="container-fluid">
                 <div className="content-inner">
                     <div className="content-body">
                         <div className="row">
-                            <div className="col-lg-9 main-box">
+                            <div className="col-lg-12">
                                 <div className="content-wrap">
                                     <div className="form-wrap">
                                         <div className="title-div">
-                                            <h3>Add New Email Template</h3>
+                                            <h3>Manage Postcard Template</h3>
                                         </div>
-                                        <form>
+                                        <form onSubmit={handleformsubmit}>
+                                            {alert}
                                             <div className="row">
                                                 <div className="col-lg-6">
                                                     <fieldset>
                                                         <label>Template Title</label>
-                                                        <input type="text" className="form-control" placeholder="Lorem Ipsum" />
+                                                        <input type="text" className="form-control" placeholder="Template Title" name="title" onChange={e => setTitle(e.target.value)} value={title} />
+                                                    </fieldset>
+                                                </div>
+                                                <div className="col-lg-6">
+                                                    <fieldset>
+                                                        <label>MRP</label>
+                                                        <input type="text" className="form-control" placeholder="MRP" name="mrp" onChange={e => setMrp(e.target.value)} value={mrp} />
+                                                    </fieldset>
+                                                </div>
+                                                <div className="col-lg-6">
+                                                    <fieldset>
+                                                        <label>Discounted Amount</label>
+                                                        <input type="text" className="form-control" placeholder="Discounted Amount" name="discount" onChange={e => setDiscount(e.target.value)} value={discount} />
                                                     </fieldset>
                                                 </div>
                                                 <div className="col-lg-6">
                                                     <fieldset className="select-box">
-                                                        <label>Select Template Category</label>
-                                                        <select className="form-control">
-                                                            <option>Select Option 1</option>
-                                                            <option>Select Option 2</option>
-                                                            <option>Select Option 3</option>
-                                                            <option>Select Option 4</option>
-                                                            <option>Select Option 5</option>
+                                                        <label>Template Category</label>
+                                                        <select className="form-control" name='category' onChange={e => setCategory(e.target.value)} value={category}>
+                                                            <option>Select a Category</option>
+                                                            {postCardCategories && postCardCategories.map((cat) => (
+                                                                <option value={cat.id}>{cat.title}</option>
+                                                            ))}
                                                         </select>
                                                     </fieldset>
                                                 </div>
-                                                <div className="col-lg-12">
+                                                <div className="col-lg-6">
                                                     <fieldset>
-                                                        <label>Template Code</label>
-                                                        <textarea className="form-control" cols="" rows="4" placeholder="Enter Message"></textarea>
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-lg-4">
-                                                    <fieldset>
-                                                        <label className="title">Enable This Template</label>
-                                                        <div className="radio small-box">
-                                                            <label>
-                                                                <input type="radio" value="" name="radio" required />
-                                                                    <span className="cr"><i className="cr-icon fa fa-check" aria-hidden="true"></i></span>
-                                                                    <span><strong>Yes</strong> <a href="#" title="Get a similarity report along with the final file ($5)"></a></span>
-                                                            </label>
-                                                        </div>
-                                                        <div className="radio small-box">
-                                                            <label>
-                                                                <input type="radio" name="radio" value="" required />
-                                                                    <span className="cr"><i className="cr-icon fa fa-check" aria-hidden="true"></i></span>
-                                                                    <span><strong>No</strong> <a href="#" title="Get a similarity report along with the final file ($5)"></a></span>
-                                                            </label>
-                                                        </div>
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-lg-8">
-                                                    <fieldset>
+                                                        <img src={preview_image && URL.createObjectURL(preview_image)} className='img-thumbnail' />
                                                         <div className="form-group">
-                                                            <label>Upload Files</label>
+                                                            <label>Preview Image</label>
                                                             <div className="custom-file">
-                                                                <input type="file" name="files[]" multiple className="custom-file-input form-control" id="customFile" />
-                                                                    <label className="custom-file-label" for="customFile">Choose file</label>
+                                                                <input type="file" name="preview_image" className="custom-file-input form-control" id="preview_image" onChange={e => setPreview_image(e.target.files[0])} />
+                                                                <label className="custom-file-label" for="preview_image">Choose file</label>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                                <div className="col-lg-6">
+                                                    <fieldset>
+                                                        <img src={attachment && URL.createObjectURL(attachment)} className='img-thumbnail' />
+                                                        <div className="form-group">
+                                                            <label>Postcard File</label>
+                                                            <div className="custom-file">
+                                                                <input type="file" name="attachment" className="custom-file-input form-control" id="attachment" onChange={e => setAttachment(e.target.files[0])} />
+                                                                <label className="custom-file-label" for="attachment">Choose file</label>
                                                             </div>
                                                         </div>
                                                     </fieldset>
                                                 </div>
                                             </div>
-                                            <button className="btn-primary">Add Template</button>
+                                            <button className="btn-primary">Save Post Card</button>
+                                            {loader}
                                         </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-3 right-box">
-                                <div className="right-panel">
-                                    <div className="graphics"><a href="#"><img src="images/chart-3.webp" alt="SlingShot" /></a></div>
-                                    <div className="right-content">
-                                        <div className="content-item">
-                                            <div className="content-title">
-                                                <div className="icon">
-                                                    <ion-icon name="documents-outline"></ion-icon>
-                                                </div>
-                                                <h4>Lorem ipsum dolor sit amet adipiscing</h4>
-                                            </div>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
-                                        </div>
-                                        <div className="content-item">
-                                            <div className="content-title">
-                                                <div className="icon">
-                                                    <ion-icon name="document-text-outline"></ion-icon>
-                                                </div>
-                                                <h4>eiusmod tempor incididunt labore et</h4>
-                                            </div>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
-                                        </div>
-                                        <div className="content-item">
-                                            <div className="content-title">
-                                                <div className="icon">
-                                                    <ion-icon name="shield-checkmark-outline"></ion-icon>
-                                                </div>
-                                                <h4>At vero eos et accusamus iusto odio dolor</h4>
-                                            </div>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

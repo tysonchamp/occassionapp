@@ -12,9 +12,10 @@ import FrontCommon from "./front/common/Common";
 
 // global variables
 import AppContext from './components/GlobalVars';
-const testApi = 'http://127.0.0.1:8000/api/';
-const liveApi = 'https://occassionapp.excelwebtechnology.com/api/';
-AppContext.apiUrl = testApi;
+const testApi = 'http://127.0.0.1:8000';
+const liveApi = 'https://occassionapp.excelwebtechnology.com';
+AppContext.apiUrl = testApi+"/api/";
+AppContext.uploadUrl = testApi+"/";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

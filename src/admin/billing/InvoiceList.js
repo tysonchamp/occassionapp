@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import AppContext from '../../components/GlobalVars';
 import Loader from '../../components/Loader';
 
-function PostcardsLists() {
+function InvoiceList() {
 
     const [postCardList, setPostCardsList] = useState("");
     const [loader, setLoader] = useState("");
@@ -150,4 +150,4 @@ function PostcardsLists() {
     </>
 }
 
-export default PostcardsLists;
+export default InvoiceList;

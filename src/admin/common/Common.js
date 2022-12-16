@@ -13,6 +13,9 @@ import PostcardsLists from '../postcards/PostcardsLists';
 // customer management
 import AddCustomers from '../customers/AddCustomers';
 import CustomerLists from '../customers/CustomerLists';
+// billing management
+import AddInvoice from '../billing/AddInvoice';
+import InvoiceList from '../billing/InvoiceList';
 // affiliates
 import AffiliateLinks from '../affiliates/AffiliateLinks';
 
@@ -174,11 +177,10 @@ function Common() {
                                     </a>
                                     <div className="sidebar-submenu">
                                         <ul>
-                                            {/* <li><a >Add Template</a></li> */}
-                                            <li><a >Pending</a></li>
-                                            <li><a >Paid</a></li>
-                                            <li><a >Failed</a></li>
-                                            <li><a >Cancelled</a></li>
+                                            <li><Link to="/admin/invoice/add">Add Template</Link></li>
+                                            <li><Link to="/admin/invoice/pending">Pending</Link></li>
+                                            <li><Link to="/admin/invoice/paid">Paid</Link></li>
+                                            <li><Link to="/admin/invoice/cancelled">Cancelled</Link></li>
                                         </ul>
                                     </div>
                                 </li>
@@ -220,6 +222,12 @@ function Common() {
             <Route path="/customer/edit/*" element={<AddCustomers />} />
             <Route path="/customer/active" element={<CustomerLists />} />
             <Route path="/customer/inactive" element={<CustomerLists />} />
+            {/* invoice section */}
+            <Route path="/invoice/add" element={<AddInvoice />} />
+            <Route path="/invoice/edit/*" element={<AddInvoice />} />
+            <Route path="/invoice/pending" element={<InvoiceList />} />
+            <Route path="/invoice/paid" element={<InvoiceList />} />
+            <Route path="/invoice/cancelled" element={<InvoiceList />} />
             {/* affiliates */}
             <Route path="/affiliates/links" element={<AffiliateLinks />} />
             <Route path="/affiliates/links/edit/*" element={<AffiliateLinks />} />
