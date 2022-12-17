@@ -1,4 +1,57 @@
+import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import AppContext from '../../components/GlobalVars';
+import Loader from '../../components/Loader';
+import InvoiceFields from '../../components/InvoiceFields';
+
 function AddInvoice() {
+
+    const [postCardList, setPostCardsList] = useState("");
+    const [invoiceItemsNumber, setInvoiceItemsNumber] = useState(1);
+    // 
+    const [loader, setLoader] = useState("");
+    const [invoiceFieldHTML, setInvoiceFieldHTML] = useState("");
+    const location = useLocation()
+
+    const showLoader = () => {
+        setLoader(
+            <Loader />
+        )
+    }
+
+    const showInvoiceFields = (rowData) => {
+        setInvoiceFieldHTML("")
+    }
+
+    const addFields = () => {
+        let fieldNumber = invoiceItemsNumber+1;
+        setInvoiceItemsNumber(fieldNumber);
+        const element = [];
+        for (let index = 0; index < invoiceItemsNumber; index++) {
+            let rowData = {};
+            rowData.id = index+1;
+            element[index] = <InvoiceFields rowdata={rowData} />;
+        }
+        setInvoiceFieldHTML(element)
+    }
+
+    useEffect(() => {
+        console.log(location.pathname.split('/'));
+        let pathname = location.pathname.split('/');
+        var requestOptions = {
+            method: 'GET',
+            // body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch(AppContext.apiUrl + "post/cards/lists/0", requestOptions)
+            .then(response => { return response.json() })
+            .then(data => { setPostCardsList(data.postcardsData) })
+
+        showInvoiceFields();
+
+    }, [location]);
+
     return <>
         <section className="main-content">
             <div className="container-fluid">
@@ -29,33 +82,35 @@ function AddInvoice() {
                                                     </fieldset>
                                                 </div>
                                             </div>
-                                            <div className="row">
-                                                <div className="col-lg-4">
-                                                    <fieldset className="select-box">
-                                                        <label>Select Purpose</label>
-                                                        <select className="form-control">
-                                                            <option>name</option>
-                                                            <option>name</option>
-                                                        </select>
-                                                    </fieldset>
+                                            <div id='productsLists'>
+                                                <div className="row" id='rowid-0'>
+                                                    <div className="col-lg-4">
+                                                        <fieldset className="select-box">
+                                                            <label>Select Postcard</label>
+                                                            <select className="form-control">
+                                                                <option>name</option>
+                                                            </select>
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-lg-3">
+                                                        <fieldset>
+                                                            <label>Amount</label>
+                                                            <input type="text" className="form-control" />
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-lg-4">
+                                                        <fieldset className="">
+                                                            <label>Remarks</label>
+                                                            <input type="text" className="form-control" />
+                                                        </fieldset>
+                                                    </div>
+                                                    <div className="col-lg-1">
+                                                        <fieldset style={{ marginTop: '40px' }}>
+                                                            <ion-icon name="add-circle-outline" style={{ fontSize: '35px' }} onClick={addFields}></ion-icon>
+                                                        </fieldset>
+                                                    </div>
                                                 </div>
-                                                <div className="col-lg-3">
-                                                    <fieldset>
-                                                        <label>Amount</label>
-                                                        <input type="text" className="form-control" />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-lg-4">
-                                                    <fieldset className="">
-                                                        <label>Remarks</label>
-                                                        <input type="text" className="form-control" />
-                                                    </fieldset>
-                                                </div>
-                                                <div className="col-lg-1">
-                                                    <fieldset style={{marginTop: '40px'}}>
-                                                        <ion-icon name="add-circle-outline" style={{fontSize: '35px'}}></ion-icon>
-                                                    </fieldset>
-                                                </div>
+                                                {invoiceFieldHTML}
                                             </div>
                                             <div className="row">
                                                 <div className="col-lg-12">
@@ -99,7 +154,7 @@ function AddInvoice() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row" style={{marginTop: '25px'}}>
+                                            <div className="row" style={{ marginTop: '25px' }}>
                                                 <div className="col-lg-6">
                                                     <fieldset>
                                                         <label>Notes</label>
