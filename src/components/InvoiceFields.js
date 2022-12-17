@@ -4,12 +4,14 @@ function InvoiceFields(props) {
 
     return (
         <>
-            <div className="row" id={`rowid-${(props.rowdata != null ? props.rowdata.id : 0)}`} key={(props.rowdata != null ? props.rowdata.id : 0)}>
+            <div className="row" id={`rowid-${(props.rowdata != null ? props.rowdata.id : 0)}`} key="{(props.rowdata != null ? props.rowdata.id : 0)}">
                 <div className="col-lg-4">
                     <fieldset className="select-box">
                         <label>Select Postcard</label>
                         <select className="form-control">
-                            <option>name</option>
+                            {props.rowdata && props.rowdata.postCardList.map( (card) => (
+                                <option value={card.id} mrp={card.mrp} discount={card.discount}>{card.title}</option>
+                            ))}
                         </select>
                     </fieldset>
                 </div>

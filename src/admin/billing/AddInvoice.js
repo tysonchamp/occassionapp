@@ -30,6 +30,7 @@ function AddInvoice() {
         for (let index = 0; index < invoiceItemsNumber; index++) {
             let rowData = {};
             rowData.id = index+1;
+            rowData.postCardList = postCardList;
             element[index] = <InvoiceFields rowdata={rowData} />;
         }
         setInvoiceFieldHTML(element)
@@ -44,7 +45,7 @@ function AddInvoice() {
             redirect: 'follow'
         };
 
-        fetch(AppContext.apiUrl + "post/cards/lists/0", requestOptions)
+        fetch(AppContext.apiUrl + "post/cards/all", requestOptions)
             .then(response => { return response.json() })
             .then(data => { setPostCardsList(data.postcardsData) })
 
@@ -83,12 +84,14 @@ function AddInvoice() {
                                                 </div>
                                             </div>
                                             <div id='productsLists'>
-                                                <div className="row" id='rowid-0'>
+                                                <div className="row" id='rowid-0' key="{'rowid-0'}">
                                                     <div className="col-lg-4">
                                                         <fieldset className="select-box">
                                                             <label>Select Postcard</label>
                                                             <select className="form-control">
-                                                                <option>name</option>
+                                                                {postCardList && postCardList.map( (card) => (
+                                                                    <option value={card.id} mrp={card.mrp} discount={card.discount}>{card.title}</option>
+                                                                ))}
                                                             </select>
                                                         </fieldset>
                                                     </div>
