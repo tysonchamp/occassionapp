@@ -5,7 +5,7 @@ import Loader from '../../components/Loader';
 
 function InvoiceList() {
 
-    const [postCardList, setPostCardsList] = useState("");
+    const [invoiceLists, setInvoiceLists] = useState("");
     const [loader, setLoader] = useState("");
     const location = useLocation()
 
@@ -24,10 +24,16 @@ function InvoiceList() {
             redirect: 'follow'
         };
 
-        fetch(AppContext.apiUrl + "post/cards/lists/0", requestOptions)
-            .then(response => { return response.json() })
-            .then(data => { setPostCardsList(data.postcardsData) })
-        
+        if(pathname[3] == 'cancelled'){
+            fetch(AppContext.apiUrl + "billing/cancelled/0", requestOptions)
+                .then(response => { return response.json() })
+                .then(data => { setInvoiceLists(data.allBillingList) })
+        }else{
+            fetch(AppContext.apiUrl + "billing/lists/0", requestOptions)
+                .then(response => { return response.json() })
+                .then(data => { setInvoiceLists(data.allBillingList) })
+        }
+
     }, [location]);
 
     const statusupdate = (userid, status) => {
@@ -43,9 +49,9 @@ function InvoiceList() {
             redirect: 'follow'
         };
 
-        fetch(AppContext.apiUrl + "post/cards/status_update", requestOptions)
+        fetch(AppContext.apiUrl + "billing/status_update", requestOptions)
             .then(response => { return response.json() })
-            .then(data => { setPostCardsList(data.postcardsData) })
+            .then(data => { setInvoiceLists(data.allBillingList) })
 
         setLoader("");
     }
@@ -86,7 +92,7 @@ function InvoiceList() {
                                                     <label>Text Box</label>
                                                     <input type="text" className="form-control" placeholder="Lorem Ipsum" />
                                                 </fieldset>
-                                                <fieldset className="col-lg-3" style={{marginTop: '32px'}}>
+                                                <fieldset className="col-lg-3" style={{ marginTop: '32px' }}>
                                                     <button className="btn-block btn-dark">Add</button>
                                                 </fieldset>
                                             </div>
@@ -106,27 +112,25 @@ function InvoiceList() {
                                                     <table className="table table-borderless">
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Preview</th>
-                                                                <th scope="col">Title</th>
-                                                                <th scope="col">MRP</th>
-                                                                <th scope="col">Discounted Cost</th>
+                                                                <th scope="col">#</th>
+                                                                <th scope="col">Amount</th>
+                                                                <th scope="col">Notes</th>
                                                                 <th scope="col"></th>
                                                                 <th scope="col"></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {postCardList && postCardList.map((card) => (
-                                                                <tr key={card.id}>
-                                                                    <td scope="row"><img src={AppContext.uploadUrl+card.preview_image} width={'100px'} /></td>
-                                                                    <td>{card.title}</td>
-                                                                    <td>{card.mrp} USD</td>
-                                                                    <td>{card.discount} USD</td>
+                                                            {invoiceLists && invoiceLists.map((invoice) => (
+                                                                <tr key={invoice.id}>
+                                                                    <td scope="row">#{invoice.id}</td>
+                                                                    <td>{invoice.amount} USD</td>
+                                                                    <td>{invoice.notes}</td>
                                                                     <td>
-                                                                    <Link to={`/admin/postcards/edit/${card.id}`} state={{ cardid: card.id }}><i className="fa fa-pencil-square-o fa-lg"></i></Link>
+                                                                        <Link to={`/admin/invoice/edit/${invoice.id}`} state={{ invoiceid: invoice.id }}><i className="fa fa-pencil-square-o fa-lg"></i></Link>
                                                                     </td>
                                                                     <td>
-                                                                    <a href="" onClick={(e) => { e.preventDefault(); statusupdate(card.id, (card.deleted_at == null ? 0 : 1)) }}>
-                                                                            {card.deleted_at == null ? <i className="fa fa-trash fa-lg"></i> : <i className="fa fa-recycle fa-lg"></i>}
+                                                                        <a href="" onClick={(e) => { e.preventDefault(); statusupdate(invoice.id, (invoice.deleted_at == null ? 0 : 1)) }}>
+                                                                            {invoice.deleted_at == null ? <i className="fa fa-trash fa-lg"></i> : <i className="fa fa-recycle fa-lg"></i>}
                                                                         </a>
                                                                     </td>
                                                                 </tr>

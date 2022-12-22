@@ -178,8 +178,7 @@ function Common() {
                                     <div className="sidebar-submenu">
                                         <ul>
                                             <li><Link to="/admin/invoice/add">Add Template</Link></li>
-                                            <li><Link to="/admin/invoice/pending">Pending</Link></li>
-                                            <li><Link to="/admin/invoice/paid">Paid</Link></li>
+                                            <li><Link to="/admin/invoice/lists">Lists</Link></li>
                                             <li><Link to="/admin/invoice/cancelled">Cancelled</Link></li>
                                         </ul>
                                     </div>
@@ -225,8 +224,7 @@ function Common() {
             {/* invoice section */}
             <Route path="/invoice/add" element={<AddInvoice />} />
             <Route path="/invoice/edit/*" element={<AddInvoice />} />
-            <Route path="/invoice/pending" element={<InvoiceList />} />
-            <Route path="/invoice/paid" element={<InvoiceList />} />
+            <Route path="/invoice/lists" element={<InvoiceList />} />
             <Route path="/invoice/cancelled" element={<InvoiceList />} />
             {/* affiliates */}
             <Route path="/affiliates/links" element={<AffiliateLinks />} />
